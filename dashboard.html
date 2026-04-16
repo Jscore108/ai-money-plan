@@ -1,0 +1,1636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Making Money with AI — Field Notebook v2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,800;1,9..144,400&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600&family=Caveat:wght@400;600;700&family=Kalam:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #f4efe6;
+    --paper-dark: #ebe4d6;
+    --ink: #1a1814;
+    --ink-soft: #4a453c;
+    --ink-faded: #8a8478;
+    --accent: #c2410c;
+    --accent-soft: #ea580c;
+    --rule: #d4ccbb;
+    --highlight: #fef3c7;
+    --green: #166534;
+    --red: #991b1b;
+
+    /* whiteboard palette */
+    --board: #0f1419;
+    --board-soft: #1a2028;
+    --chalk: #e8e4db;
+    --chalk-dim: #9ca3a0;
+    --blue: #6ba3c8;
+    --blue-bg: rgba(107, 163, 200, 0.08);
+    --purple: #a78ec7;
+    --purple-bg: rgba(167, 142, 199, 0.08);
+    --orange: #d4915a;
+    --orange-bg: rgba(212, 145, 90, 0.08);
+    --green-ch: #87a878;
+    --green-bg: rgba(135, 168, 120, 0.08);
+    --red-ch: #c87878;
+    --red-bg: rgba(200, 120, 120, 0.08);
+    --yellow: #d4c15a;
+    --yellow-bg: rgba(212, 193, 90, 0.08);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Inter', sans-serif;
+    line-height: 1.6;
+    min-height: 100vh;
+    background-image:
+      radial-gradient(circle at 20% 10%, rgba(194, 65, 12, 0.03) 0%, transparent 40%),
+      radial-gradient(circle at 80% 80%, rgba(22, 101, 52, 0.03) 0%, transparent 40%);
+  }
+
+  .grain {
+    position: fixed; inset: 0; pointer-events: none; z-index: 1;
+    opacity: 0.4; mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.08'/%3E%3C/svg%3E");
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 60px 40px 120px;
+    position: relative;
+    z-index: 2;
+  }
+
+  /* ============ MASTHEAD ============ */
+  .masthead {
+    border-top: 3px solid var(--ink);
+    border-bottom: 1px solid var(--ink);
+    padding: 20px 0;
+    margin-bottom: 8px;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 20px;
+  }
+  .masthead-left, .masthead-right {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+  .masthead-right { text-align: right; }
+  .masthead-title {
+    font-family: 'Fraunces', serif;
+    font-weight: 800;
+    font-size: clamp(28px, 5vw, 48px);
+    letter-spacing: -0.02em;
+    font-style: italic;
+    white-space: nowrap;
+  }
+  .subhead {
+    text-align: center;
+    font-family: 'Fraunces', serif;
+    font-size: 14px;
+    font-style: italic;
+    color: var(--ink-soft);
+    padding: 12px 0;
+    border-bottom: 3px double var(--ink);
+    margin-bottom: 40px;
+  }
+
+  /* ============ SECTIONS ============ */
+  .section { margin-bottom: 64px; }
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--ink);
+  }
+  .section-number {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    font-weight: 700;
+  }
+  .section-title {
+    font-family: 'Fraunces', serif;
+    font-size: 32px;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+  }
+  .section-meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--ink-faded);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  /* ============ PLAN (90-day) ============ */
+  .plan-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+  .plan-card {
+    background: var(--paper-dark);
+    border: 1px solid var(--rule);
+    padding: 24px 22px;
+    position: relative;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .plan-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 4px 4px 0 var(--ink);
+  }
+  .plan-card-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 6px;
+    font-weight: 700;
+  }
+  .plan-card h3 {
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    line-height: 1.25;
+  }
+  .plan-card p {
+    font-size: 14px;
+    color: var(--ink-soft);
+    line-height: 1.55;
+  }
+  .plan-card ul {
+    list-style: none;
+    margin-top: 12px;
+    padding-left: 0;
+  }
+  .plan-card li {
+    font-size: 13px;
+    color: var(--ink-soft);
+    padding-left: 18px;
+    position: relative;
+    margin-bottom: 6px;
+  }
+  .plan-card li::before {
+    content: "→";
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* ============ ANGLES GRID ============ */
+  .angles {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0;
+    border: 1px solid var(--ink);
+  }
+  .angle {
+    padding: 24px 28px;
+    border-bottom: 1px solid var(--rule);
+    border-right: 1px solid var(--rule);
+    transition: background 0.2s;
+  }
+  .angle:nth-child(2n) { border-right: none; }
+  .angle:nth-last-child(-n+2) { border-bottom: none; }
+  .angle:hover { background: var(--paper-dark); }
+  .angle-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 8px;
+  }
+  .angle-rank {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 36px;
+    font-weight: 800;
+    color: var(--accent);
+    line-height: 1;
+  }
+  .angle-priority {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border: 1px solid var(--ink-soft);
+    color: var(--ink-soft);
+  }
+  .angle-priority.hot {
+    color: var(--paper);
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+  .angle h3 {
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    font-weight: 600;
+    margin: 8px 0 10px;
+    line-height: 1.2;
+  }
+  .angle-desc {
+    font-size: 14px;
+    color: var(--ink-soft);
+    line-height: 1.55;
+    margin-bottom: 14px;
+  }
+  .angle-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    padding-top: 12px;
+    border-top: 1px dashed var(--rule);
+  }
+  .angle-stat {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+  }
+  .angle-stat-label {
+    color: var(--ink-faded);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-size: 9px;
+    margin-bottom: 2px;
+  }
+  .angle-stat-value { color: var(--ink); font-weight: 500; }
+
+  /* ============ WHITEBOARD BLUEPRINTS ============ */
+  .whiteboard-intro {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 15px;
+    color: var(--ink-soft);
+    text-align: center;
+    max-width: 680px;
+    margin: 0 auto 32px;
+    line-height: 1.55;
+  }
+
+  .board {
+    background: var(--board);
+    border: 1px solid var(--ink);
+    padding: 40px 32px;
+    margin-bottom: 32px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 6px 6px 0 var(--ink);
+  }
+  .board::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+      radial-gradient(circle at 15% 20%, rgba(255,255,255,0.02) 0%, transparent 50%),
+      radial-gradient(circle at 85% 80%, rgba(255,255,255,0.015) 0%, transparent 50%);
+    pointer-events: none;
+  }
+  .board-title {
+    font-family: 'Caveat', cursive;
+    font-weight: 700;
+    font-size: 36px;
+    color: var(--chalk);
+    text-align: center;
+    margin-bottom: 6px;
+    letter-spacing: 0.01em;
+    position: relative;
+  }
+  .board-subtitle {
+    font-family: 'Caveat', cursive;
+    font-size: 20px;
+    color: var(--accent-soft);
+    text-align: center;
+    margin-bottom: 32px;
+    position: relative;
+  }
+
+  .board svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    position: relative;
+  }
+
+  /* ============ TOOLS ============ */
+  .tools-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 0;
+    border-top: 1px solid var(--ink);
+    border-left: 1px solid var(--ink);
+  }
+  .tool {
+    padding: 20px 22px;
+    border-right: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+    background: var(--paper);
+    transition: background 0.2s, transform 0.2s;
+  }
+  .tool:hover { background: var(--paper-dark); }
+  .tool-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 6px;
+    gap: 10px;
+  }
+  .tool-name {
+    font-family: 'Fraunces', serif;
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 1.2;
+  }
+  .tool-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faded);
+    white-space: nowrap;
+    flex-shrink: 0;
+    padding-top: 4px;
+  }
+  .tool-category {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 10px;
+  }
+  .tool-note {
+    font-size: 13px;
+    color: var(--ink-soft);
+    line-height: 1.5;
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+  }
+  .tool-verdict {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px dashed var(--rule);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .verdict-keep { color: var(--green); }
+  .verdict-skip { color: var(--red); }
+  .verdict-test { color: var(--accent); }
+  .verdict-pending { color: var(--ink-faded); }
+
+  /* ============ IDEAS (tricks/plays) ============ */
+  .ideas-list {
+    border-top: 1px solid var(--ink);
+  }
+  .idea {
+    display: grid;
+    grid-template-columns: 50px 1fr auto;
+    gap: 24px;
+    padding: 20px 0;
+    border-bottom: 1px solid var(--rule);
+    align-items: baseline;
+    transition: background 0.2s, padding 0.2s;
+  }
+  .idea:hover { background: var(--paper-dark); padding-left: 12px; padding-right: 12px; }
+  .idea-num {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 800;
+    font-size: 28px;
+    color: var(--accent);
+    line-height: 1;
+  }
+  .idea-body h4 {
+    font-family: 'Fraunces', serif;
+    font-size: 19px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .idea-body p {
+    font-size: 14px;
+    color: var(--ink-soft);
+    line-height: 1.55;
+  }
+  .idea-meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faded);
+    white-space: nowrap;
+  }
+
+  /* ============ QUOTE PULL ============ */
+  .pullquote {
+    padding: 40px 0;
+    text-align: center;
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: clamp(20px, 3vw, 28px);
+    line-height: 1.4;
+    color: var(--ink);
+    border-top: 1px solid var(--ink);
+    border-bottom: 1px solid var(--ink);
+    position: relative;
+    margin: 48px 0;
+  }
+  .pullquote::before, .pullquote::after {
+    content: "";
+    display: block;
+    width: 40px;
+    height: 1px;
+    background: var(--ink);
+    margin: 0 auto;
+  }
+  .pullquote::before { margin-bottom: 24px; }
+  .pullquote::after { margin-top: 24px; }
+  .pullquote-attr {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--ink-faded);
+    font-style: normal;
+    margin-top: 20px;
+    display: block;
+  }
+
+  /* ============ FOOTER ============ */
+  .footer {
+    margin-top: 80px;
+    padding-top: 24px;
+    border-top: 3px solid var(--ink);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+  .footer-right { text-align: right; }
+
+  /* ============ RESPONSIVE ============ */
+  @media (max-width: 768px) {
+    .container { padding: 30px 16px 60px; }
+    .masthead { grid-template-columns: 1fr; text-align: center; }
+    .masthead-right { text-align: center; }
+    .plan-grid { grid-template-columns: 1fr; }
+    .angles { grid-template-columns: 1fr; }
+    .angle { border-right: none !important; }
+    .angle:nth-last-child(-n+2) { border-bottom: 1px solid var(--rule); }
+    .angle:last-child { border-bottom: none; }
+    .idea { grid-template-columns: 40px 1fr; }
+    .idea-meta { grid-column: 2; }
+    .board { padding: 24px 12px; }
+    .board-title { font-size: 28px; }
+  }
+
+  /* ============ INTRO ANIMATION ============ */
+  .fade-in {
+    animation: fadeUp 0.6s ease-out backwards;
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .section:nth-of-type(1) { animation-delay: 0.1s; }
+  .section:nth-of-type(2) { animation-delay: 0.2s; }
+  .section:nth-of-type(3) { animation-delay: 0.3s; }
+  .section:nth-of-type(4) { animation-delay: 0.4s; }
+
+  /* ============ WHITEBOARD SVG text classes ============ */
+  .wb-box-text {
+    font-family: 'Caveat', cursive;
+    font-weight: 600;
+    font-size: 18px;
+    fill: var(--chalk);
+    text-anchor: middle;
+    dominant-baseline: middle;
+  }
+  .wb-box-text-sm {
+    font-family: 'Caveat', cursive;
+    font-weight: 600;
+    font-size: 15px;
+    fill: var(--chalk);
+    text-anchor: middle;
+    dominant-baseline: middle;
+  }
+  .wb-annotation {
+    font-family: 'Kalam', cursive;
+    font-weight: 300;
+    font-size: 13px;
+    fill: var(--chalk-dim);
+  }
+  .wb-annotation-italic {
+    font-family: 'Kalam', cursive;
+    font-weight: 300;
+    font-style: italic;
+    font-size: 13px;
+    fill: var(--chalk-dim);
+  }
+  .wb-header {
+    font-family: 'Caveat', cursive;
+    font-weight: 700;
+    font-size: 22px;
+    fill: var(--chalk);
+    text-anchor: middle;
+  }
+  .wb-math {
+    font-family: 'Kalam', cursive;
+    font-size: 14px;
+    fill: var(--chalk);
+  }
+  .wb-math-hdr {
+    font-family: 'Caveat', cursive;
+    font-weight: 700;
+    font-size: 18px;
+    fill: var(--chalk);
+  }
+
+  .wb-arrow {
+    stroke: var(--chalk-dim);
+    stroke-width: 2;
+    fill: none;
+    stroke-linecap: round;
+  }
+  .wb-arrow-dashed {
+    stroke: var(--chalk-dim);
+    stroke-width: 1.5;
+    fill: none;
+    stroke-linecap: round;
+    stroke-dasharray: 5,4;
+  }
+</style>
+</head>
+<body>
+<div class="grain"></div>
+<div class="container">
+
+  <!-- ============ MASTHEAD ============ -->
+  <div class="masthead fade-in">
+    <div class="masthead-left">Vol. I · No. 02</div>
+    <div class="masthead-title">Making Money with AI</div>
+    <div class="masthead-right" id="date-line">Est. 2026</div>
+  </div>
+  <div class="subhead fade-in">A personal field notebook — ideas, tools, plays, and plans. Updated as learned.</div>
+
+  <!-- ============ 90-DAY PLAN ============ -->
+  <section class="section fade-in">
+    <div class="section-header">
+      <div>
+        <div class="section-number">§ I · The Plan</div>
+        <div class="section-title">Ninety Days, Stacked</div>
+      </div>
+      <div class="section-meta">Priority Order</div>
+    </div>
+    <div class="plan-grid">
+      <div class="plan-card">
+        <div class="plan-card-label">Month 01 · Days 1–30</div>
+        <h3>Electrical PM Toolkit</h3>
+        <p>Build a change-order pricing workflow against real jobs. Measurable dollar recovery within 30 days.</p>
+        <ul>
+          <li>Week 1 — Foundation: inputs + outputs</li>
+          <li>Week 2 — Test on 3–5 real COs</li>
+          <li>Week 3 — Lock .docx templates</li>
+          <li>Week 4 — RFI + submittal layer</li>
+        </ul>
+      </div>
+      <div class="plan-card">
+        <div class="plan-card-label">Month 02 · Days 31–60</div>
+        <h3>Trading Discipline Audit</h3>
+        <p>AI as oversight layer over Arch Public execution. Thesis journal, morning scan, evening review. Not signal generation.</p>
+        <ul>
+          <li>60+ days of documented ideas</li>
+          <li>Morning macro scan → Telegram</li>
+          <li>Evening P&L vs thesis audit</li>
+          <li>Monthly regime review</li>
+        </ul>
+      </div>
+      <div class="plan-card">
+        <div class="plan-card-label">Month 03 · Days 61–90</div>
+        <h3>Toolkit Rollout + The Ask</h3>
+        <p>Multi-project dashboard live. 3+ colleagues using it on real projects. Owner conversation with adoption + outcome data → raise/title/comp ask.</p>
+        <ul>
+          <li>Dashboard + PDF upload live</li>
+          <li>3+ colleagues adopting</li>
+          <li>Documented dollar outcomes</li>
+          <li>Schedule the owner conversation</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PULLQUOTE ============ -->
+  <div class="pullquote fade-in">
+    The people making real money with AI right now are not selling AI.<br>They're quietly using it to do their existing job 3× better.
+    <span class="pullquote-attr">— Operating Principle</span>
+  </div>
+
+  <!-- ============ INCOME ANGLES ============ -->
+  <section class="section fade-in">
+    <div class="section-header">
+      <div>
+        <div class="section-number">§ II · The Angles</div>
+        <div class="section-title">Six Ways In</div>
+      </div>
+      <div class="section-meta">Ranked for your setup</div>
+    </div>
+    <div class="angles">
+
+      <div class="angle">
+        <div class="angle-head">
+          <span class="angle-rank">01</span>
+          <span class="angle-priority hot">Priority · Active</span>
+        </div>
+        <h3>Augment Existing Work</h3>
+        <p class="angle-desc">Use AI inside electrical PM. CO pricing, RFIs, submittals, estimating. Zero sales cycle — you're the customer. Highest $/hour invested.</p>
+        <div class="angle-stats">
+          <div class="angle-stat">
+            <div class="angle-stat-label">Time to $</div>
+            <div class="angle-stat-value">7–30 days</div>
+          </div>
+          <div class="angle-stat">
+            <div class="angle-stat-label">Risk</div>
+            <div class="angle-stat-value">Very Low</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="angle">
+        <div class="angle-head">
+          <span class="angle-rank">02</span>
+          <span class="angle-priority">Priority · Queued</span>
+        </div>
+        <h3>Personal Trading Stack</h3>
+        <p class="angle-desc">Phase 1: Arch Public oversight + thesis journal. Phase 2: 5-engine allocation (BTC / ETH / S&amp;P futures / STRC / stables) with a personal read-only dashboard + custom bots for what Arch can't do. Your capital only.</p>
+        <div class="angle-stats">
+          <div class="angle-stat">
+            <div class="angle-stat-label">Time to $</div>
+            <div class="angle-stat-value">60–180 days</div>
+          </div>
+          <div class="angle-stat">
+            <div class="angle-stat-label">Risk</div>
+            <div class="angle-stat-value">High variance</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="angle">
+        <div class="angle-head">
+          <span class="angle-rank">03</span>
+          <span class="angle-priority">Priority · Month 3 gate</span>
+        </div>
+        <h3>Internal Toolkit at Premier</h3>
+        <p class="angle-desc">Build the PM/Estimator work package your colleagues actually use. Adoption + outcomes = leverage for raise/title/comp. No external sales cycle.</p>
+        <div class="angle-stats">
+          <div class="angle-stat">
+            <div class="angle-stat-label">Time to raise</div>
+            <div class="angle-stat-value">60–120 days</div>
+          </div>
+          <div class="angle-stat">
+            <div class="angle-stat-label">Risk</div>
+            <div class="angle-stat-value">Low-moderate</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="angle">
+        <div class="angle-head">
+          <span class="angle-rank">04</span>
+          <span class="angle-priority">Priority · Year 2+</span>
+        </div>
+        <h3>External Consulting</h3>
+        <p class="angle-desc">If Premier blesses it (or you leave), license the toolkit to other electrical subs. $2–5k setup + $1k/mo retainer. Deferred until internal play settles.</p>
+        <div class="angle-stats">
+          <div class="angle-stat">
+            <div class="angle-stat-label">Time to $</div>
+            <div class="angle-stat-value">6–18 months</div>
+          </div>
+          <div class="angle-stat">
+            <div class="angle-stat-label">Risk</div>
+            <div class="angle-stat-value">High</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="angle">
+        <div class="angle-head">
+          <span class="angle-rank">05</span>
+          <span class="angle-priority">Priority · Skip for now</span>
+        </div>
+        <h3>Content & Audience</h3>
+        <p class="angle-desc">LinkedIn + X. Post before/after stories from Angle 01 wins. Build an audience of PMs and estimators. Requires Angle 01 to produce wins worth posting about — activate only then.</p>
+        <div class="angle-stats">
+          <div class="angle-stat">
+            <div class="angle-stat-label">Time to $</div>
+            <div class="angle-stat-value">12+ months</div>
+          </div>
+          <div class="angle-stat">
+            <div class="angle-stat-label">Risk</div>
+            <div class="angle-stat-value">Audience risk</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="angle" style="grid-column: 1 / -1; border-right: none; border-top: 1px solid var(--red); background: rgba(153, 27, 27, 0.04);">
+        <div class="angle-head">
+          <span class="angle-rank" style="color: var(--red);">06</span>
+          <span class="angle-priority" style="color: var(--red); border-color: var(--red);">Priority · Parked · Year 2–3+</span>
+        </div>
+        <h3>Managed Trading Service</h3>
+        <p class="angle-desc">Offering a trading service to clients using your Arch Public infrastructure. Parked behind a hard registration gate: Series 65, state RIA, possibly CFTC/NFA for futures, E&amp;O insurance, compliance attorney. Not activated until every gate clears. No client money, no guarantees, no "units" — ever — before then.</p>
+        <div class="angle-stats">
+          <div class="angle-stat">
+            <div class="angle-stat-label">Time to $</div>
+            <div class="angle-stat-value">12–24 months from decision to register</div>
+          </div>
+          <div class="angle-stat">
+            <div class="angle-stat-label">Risk</div>
+            <div class="angle-stat-value">High regulatory · enforcement record is active</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============ WHITEBOARD BLUEPRINT: INTERNAL TOOLKIT ============ -->
+  <section class="section fade-in">
+    <div class="section-header">
+      <div>
+        <div class="section-number">§ III · The Blueprint</div>
+        <div class="section-title">Internal Toolkit at Premier</div>
+      </div>
+      <div class="section-meta">Leverage play · raise/title ask</div>
+    </div>
+    <p class="whiteboard-intro">Build a working PM/Estimator toolkit your colleagues actually use. Adoption across the team + documented outcomes = leverage for the owner conversation. No external sales, no audience needed, no clients. You're becoming indispensable, not self-employed.</p>
+
+    <div class="board">
+      <div class="board-title">The Internal Leverage Blueprint</div>
+      <div class="board-subtitle">you build it · colleagues use it · owners pay you more</div>
+
+      <svg viewBox="0 0 1000 1000" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="arrowhead" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+            <polygon points="0 0, 8 4, 0 8" fill="#9ca3a0"/>
+          </marker>
+        </defs>
+
+        <!-- Top: YOU label -->
+        <text x="270" y="30" class="wb-header" style="fill: var(--yellow);">YOU (builder)</text>
+        <line x1="120" y1="40" x2="420" y2="40" stroke="var(--chalk-dim)" stroke-width="1" stroke-dasharray="4,4"/>
+
+        <!-- Box 1: CLAUDE.md foundation -->
+        <rect x="80" y="60" width="380" height="72" rx="10" ry="10" fill="var(--yellow-bg)" stroke="var(--yellow)" stroke-width="2"/>
+        <text x="270" y="88" class="wb-box-text" style="fill: var(--yellow);">CLAUDE.md — Premier's brain</text>
+        <text x="270" y="112" class="wb-box-text-sm">union IBEW · markup rules · CO format · GC quirks</text>
+        <line x1="270" y1="132" x2="270" y2="160" class="wb-arrow" marker-end="url(#arrowhead)"/>
+
+        <!-- Box 2: Build the 5 modules -->
+        <rect x="80" y="165" width="380" height="62" rx="10" ry="10" fill="var(--purple-bg)" stroke="var(--purple)" stroke-width="2"/>
+        <text x="270" y="200" class="wb-box-text">Build 5 modules (Claude Code)</text>
+        <line x1="270" y1="227" x2="270" y2="255" class="wb-arrow" marker-end="url(#arrowhead)"/>
+
+        <!-- Module list as smaller boxes -->
+        <rect x="80" y="260" width="120" height="42" rx="6" ry="6" fill="var(--purple-bg)" stroke="var(--purple)" stroke-width="1.5"/>
+        <text x="140" y="286" class="wb-box-text-sm">1. Estimating</text>
+        <rect x="210" y="260" width="120" height="42" rx="6" ry="6" fill="var(--purple-bg)" stroke="var(--purple)" stroke-width="1.5"/>
+        <text x="270" y="286" class="wb-box-text-sm">2. Change Orders</text>
+        <rect x="340" y="260" width="120" height="42" rx="6" ry="6" fill="var(--purple-bg)" stroke="var(--purple)" stroke-width="1.5"/>
+        <text x="400" y="286" class="wb-box-text-sm">3. RFIs</text>
+        <rect x="80" y="312" width="185" height="42" rx="6" ry="6" fill="var(--purple-bg)" stroke="var(--purple)" stroke-width="1.5"/>
+        <text x="172" y="338" class="wb-box-text-sm">4. Submittals</text>
+        <rect x="275" y="312" width="185" height="42" rx="6" ry="6" fill="var(--purple-bg)" stroke="var(--purple)" stroke-width="1.5"/>
+        <text x="367" y="338" class="wb-box-text-sm">5. Contract / Risk</text>
+
+        <line x1="270" y1="358" x2="270" y2="390" class="wb-arrow" marker-end="url(#arrowhead)"/>
+
+        <!-- Box: Deploy -->
+        <rect x="80" y="395" width="380" height="62" rx="10" ry="10" fill="var(--orange-bg)" stroke="var(--orange)" stroke-width="2"/>
+        <text x="270" y="420" class="wb-box-text">Deploy to a URL</text>
+        <text x="270" y="444" class="wb-box-text-sm" style="font-style: italic;">GitHub Pages / Replit / Vercel · free tier</text>
+
+        <!-- Right-side annotations for YOUR stack -->
+        <text x="490" y="85" class="wb-annotation">Foundation file — do this FIRST</text>
+        <text x="490" y="103" class="wb-annotation-italic">without it, every output is generic</text>
+
+        <text x="490" y="190" class="wb-annotation">Prompt templates, not agents</text>
+        <text x="490" y="208" class="wb-annotation-italic">(OpenClaw not needed)</text>
+
+        <text x="490" y="330" class="wb-annotation">Each = one React Artifact</text>
+        <text x="490" y="348" class="wb-annotation-italic">form + button + formatted output</text>
+
+        <text x="490" y="420" class="wb-annotation">One URL, any browser</text>
+        <text x="490" y="438" class="wb-annotation-italic">$0–20/mo hosting</text>
+
+        <!-- DIVIDER 1 -->
+        <line x1="60" y1="490" x2="940" y2="490" stroke="var(--chalk-dim)" stroke-width="1.5" stroke-dasharray="8,6"/>
+        <text x="270" y="515" class="wb-header" style="fill: var(--blue);">COLLEAGUES (users)</text>
+
+        <!-- Colleague flow -->
+        <rect x="80" y="535" width="180" height="60" rx="10" ry="10" fill="var(--blue-bg)" stroke="var(--blue)" stroke-width="2"/>
+        <text x="170" y="562" class="wb-box-text-sm">Open URL</text>
+        <text x="170" y="582" class="wb-box-text-sm" style="font-style: italic; fill: var(--chalk-dim);">no install · no login</text>
+
+        <line x1="265" y1="565" x2="335" y2="565" class="wb-arrow" marker-end="url(#arrowhead)"/>
+
+        <rect x="340" y="535" width="180" height="60" rx="10" ry="10" fill="var(--blue-bg)" stroke="var(--blue)" stroke-width="2"/>
+        <text x="430" y="562" class="wb-box-text-sm">Fill 3–4 fields</text>
+        <text x="430" y="582" class="wb-box-text-sm" style="font-style: italic; fill: var(--chalk-dim);">condition · hours · $</text>
+
+        <line x1="525" y1="565" x2="595" y2="565" class="wb-arrow" marker-end="url(#arrowhead)"/>
+
+        <rect x="600" y="535" width="180" height="60" rx="10" ry="10" fill="var(--blue-bg)" stroke="var(--blue)" stroke-width="2"/>
+        <text x="690" y="562" class="wb-box-text-sm">Copy output</text>
+        <text x="690" y="582" class="wb-box-text-sm" style="font-style: italic; fill: var(--chalk-dim);">into their CO form</text>
+
+        <line x1="785" y1="565" x2="855" y2="565" class="wb-arrow" marker-end="url(#arrowhead)"/>
+
+        <rect x="860" y="535" width="100" height="60" rx="10" ry="10" fill="var(--green-bg)" stroke="var(--green-ch)" stroke-width="2"/>
+        <text x="910" y="572" class="wb-box-text-sm" style="fill: var(--green-ch);">Send</text>
+
+        <!-- Phase 2: project dashboard — expanded -->
+        <rect x="80" y="625" width="780" height="100" rx="10" ry="10" fill="var(--green-bg)" stroke="var(--green-ch)" stroke-width="2"/>
+        <text x="470" y="650" class="wb-box-text" style="fill: var(--green-ch);">Phase 2 → Multi-Project Dashboard</text>
+        <text x="160" y="678" class="wb-box-text-sm">📄 Upload PDF</text>
+        <text x="160" y="700" class="wb-annotation-italic" text-anchor="middle" style="font-size: 12px;">(RFI/CO/submittal)</text>
+        <text x="240" y="689" class="wb-annotation" style="fill: var(--chalk);">→</text>
+        <text x="330" y="678" class="wb-box-text-sm">Claude extracts</text>
+        <text x="330" y="700" class="wb-annotation-italic" text-anchor="middle" style="font-size: 12px;">#, subject, due date</text>
+        <text x="420" y="689" class="wb-annotation" style="fill: var(--chalk);">→</text>
+        <text x="510" y="678" class="wb-box-text-sm">Logs per project</text>
+        <text x="510" y="700" class="wb-annotation-italic" text-anchor="middle" style="font-size: 12px;">persistent storage</text>
+        <text x="600" y="689" class="wb-annotation" style="fill: var(--chalk);">→</text>
+        <text x="700" y="678" class="wb-box-text-sm" style="fill: var(--red-ch);">Overdue alerts</text>
+        <text x="700" y="700" class="wb-annotation-italic" text-anchor="middle" style="font-size: 12px; fill: var(--red-ch);">red = past due</text>
+        <text x="470" y="719" class="wb-annotation-italic" text-anchor="middle" style="font-size: 12px; fill: var(--yellow);">this is the version you show owners</text>
+
+        <!-- DIVIDER 2 -->
+        <line x1="60" y1="758" x2="940" y2="758" stroke="var(--chalk-dim)" stroke-width="1.5" stroke-dasharray="8,6"/>
+        <text x="500" y="783" class="wb-header" style="fill: var(--accent-soft);">THE LEVERAGE CASE (Month 3)</text>
+
+        <!-- Adoption box -->
+        <rect x="80" y="803" width="260" height="80" rx="10" ry="10" fill="var(--board-soft)" stroke="var(--blue)" stroke-width="2"/>
+        <text x="210" y="830" class="wb-box-text-sm" style="fill: var(--blue);">ADOPTION METRICS</text>
+        <text x="210" y="853" class="wb-box-text-sm">3+ colleagues using it</text>
+        <text x="210" y="871" class="wb-box-text-sm">projects actively logged</text>
+
+        <!-- Outcomes box -->
+        <rect x="360" y="803" width="260" height="80" rx="10" ry="10" fill="var(--board-soft)" stroke="var(--green-ch)" stroke-width="2"/>
+        <text x="490" y="830" class="wb-box-text-sm" style="fill: var(--green-ch);">OUTCOME METRICS</text>
+        <text x="490" y="853" class="wb-box-text-sm">$$ recovered on specific COs</text>
+        <text x="490" y="871" class="wb-box-text-sm">RFI turnaround speed</text>
+
+        <!-- The ask box -->
+        <rect x="640" y="803" width="280" height="80" rx="10" ry="10" fill="var(--yellow-bg)" stroke="var(--yellow)" stroke-width="2"/>
+        <text x="780" y="830" class="wb-box-text-sm" style="fill: var(--yellow);">THE ASK</text>
+        <text x="780" y="853" class="wb-box-text-sm">raise · title · profit-share</text>
+        <text x="780" y="873" class="wb-box-text-sm" style="font-style: italic;">(specific, backed by data)</text>
+
+        <!-- Bottom notes -->
+        <text x="500" y="928" class="wb-annotation-italic" text-anchor="middle" style="font-size: 15px;">Rule: you are not asking to be paid for potential.</text>
+        <text x="500" y="950" class="wb-annotation-italic" text-anchor="middle" style="font-size: 15px;">You are asking to be paid for demonstrated leverage across the team.</text>
+        <text x="500" y="980" class="wb-annotation" text-anchor="middle" style="font-size: 13px; fill: var(--chalk-dim);">If owners don't pay, that's information — quietly pivot to Angle 04 (external) with clean-room IP.</text>
+      </svg>
+    </div>
+  </section>
+
+  <!-- ============ WHITEBOARD BLUEPRINT: TRADING ============ -->
+  <section class="section fade-in">
+    <div class="section-header">
+      <div>
+        <div class="section-number">§ IV · The Trading Stack</div>
+        <div class="section-title">Arch Public + AI Oversight</div>
+      </div>
+      <div class="section-meta">Layered, not replaced</div>
+    </div>
+    <p class="whiteboard-intro">You already have execution via Arch Public. Don't rebuild it. Build the thinking layer above — thesis journal, morning scan, evening review. AI does synthesis, not signal generation.</p>
+
+    <div class="board">
+      <div class="board-title">AI Oversight over Arch Public</div>
+      <div class="board-subtitle">keep what you paid for · layer intelligence on top</div>
+
+      <svg viewBox="0 0 1000 620" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="arrowhead2" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+            <polygon points="0 0, 8 4, 0 8" fill="#9ca3a0"/>
+          </marker>
+        </defs>
+
+        <!-- EXECUTION LAYER (top half) label -->
+        <text x="500" y="30" class="wb-header">EXECUTION LAYER — already built (Arch Public)</text>
+        <line x1="80" y1="40" x2="920" y2="40" stroke="var(--chalk-dim)" stroke-width="1" stroke-dasharray="4,4"/>
+
+        <!-- TradingView -->
+        <rect x="60" y="80" width="180" height="70" rx="10" ry="10" fill="var(--blue-bg)" stroke="var(--blue)" stroke-width="2"/>
+        <text x="150" y="115" class="wb-box-text">TradingView</text>
+        <text x="150" y="140" class="wb-box-text-sm">(signals)</text>
+
+        <!-- arrow to webhook -->
+        <line x1="245" y1="115" x2="335" y2="115" class="wb-arrow" marker-end="url(#arrowhead2)"/>
+        <text x="290" y="108" class="wb-annotation" text-anchor="middle">webhook</text>
+
+        <!-- Arch Public Executor -->
+        <rect x="340" y="80" width="220" height="70" rx="10" ry="10" fill="var(--orange-bg)" stroke="var(--orange)" stroke-width="2"/>
+        <text x="450" y="110" class="wb-box-text">Arch Public</text>
+        <text x="450" y="135" class="wb-box-text-sm">executor · 24/7 · no AI</text>
+
+        <!-- arrow to exchange -->
+        <line x1="565" y1="115" x2="660" y2="115" class="wb-arrow" marker-end="url(#arrowhead2)"/>
+        <text x="610" y="108" class="wb-annotation" text-anchor="middle">trade</text>
+
+        <!-- Exchange -->
+        <rect x="665" y="80" width="180" height="70" rx="10" ry="10" fill="var(--green-bg)" stroke="var(--green-ch)" stroke-width="2"/>
+        <text x="755" y="108" class="wb-box-text">Kraken / Coinbase</text>
+        <text x="755" y="130" class="wb-box-text-sm">custody stays yours</text>
+
+        <!-- Safety box -->
+        <rect x="340" y="185" width="220" height="60" rx="10" ry="10" fill="var(--red-bg)" stroke="var(--red-ch)" stroke-width="2"/>
+        <text x="450" y="220" class="wb-box-text">Built-in safety limits</text>
+        <line x1="450" y1="185" x2="450" y2="150" class="wb-arrow-dashed"/>
+
+        <!-- Telegram alerts box -->
+        <rect x="665" y="185" width="180" height="60" rx="10" ry="10" fill="var(--blue-bg)" stroke="var(--blue)" stroke-width="2"/>
+        <text x="755" y="218" class="wb-box-text">Telegram alerts</text>
+        <line x1="755" y1="185" x2="755" y2="150" class="wb-arrow-dashed"/>
+        <text x="865" y="200" class="wb-annotation">/status</text>
+        <text x="865" y="218" class="wb-annotation">/positions</text>
+        <text x="865" y="236" class="wb-annotation">/kill</text>
+
+        <!-- DIVIDER -->
+        <line x1="60" y1="295" x2="940" y2="295" stroke="var(--chalk-dim)" stroke-width="1.5" stroke-dasharray="8,6"/>
+        <text x="500" y="320" class="wb-header" style="fill: var(--yellow);">AI OVERSIGHT LAYER — build this</text>
+
+        <!-- TradingView MCP -->
+        <rect x="60" y="360" width="220" height="90" rx="10" ry="10" fill="var(--purple-bg)" stroke="var(--purple)" stroke-width="2"/>
+        <text x="170" y="395" class="wb-box-text">Claude reads charts</text>
+        <text x="170" y="420" class="wb-box-text-sm">via TradingView MCP</text>
+        <text x="170" y="440" class="wb-box-text-sm" style="font-style: italic; fill: var(--chalk-dim);">+ macro + funding</text>
+
+        <line x1="285" y1="405" x2="375" y2="405" class="wb-arrow" marker-end="url(#arrowhead2)"/>
+
+        <!-- Morning scan -->
+        <rect x="380" y="360" width="240" height="90" rx="10" ry="10" fill="var(--purple-bg)" stroke="var(--purple)" stroke-width="2"/>
+        <text x="500" y="395" class="wb-box-text">Morning market scan</text>
+        <text x="500" y="420" class="wb-box-text-sm">thesis journal check</text>
+        <text x="500" y="440" class="wb-box-text-sm" style="font-style: italic; fill: var(--chalk-dim);">→ Telegram digest</text>
+
+        <line x1="625" y1="405" x2="715" y2="405" class="wb-arrow" marker-end="url(#arrowhead2)"/>
+
+        <!-- Evening review -->
+        <rect x="720" y="360" width="220" height="90" rx="10" ry="10" fill="var(--purple-bg)" stroke="var(--purple)" stroke-width="2"/>
+        <text x="830" y="395" class="wb-box-text">Daily P&amp;L review</text>
+        <text x="830" y="420" class="wb-box-text-sm">thesis vs reality</text>
+        <text x="830" y="440" class="wb-box-text-sm" style="font-style: italic; fill: var(--chalk-dim);">monthly audit</text>
+
+        <!-- Cost boxes -->
+        <rect x="120" y="490" width="250" height="60" rx="10" ry="10" fill="var(--board-soft)" stroke="var(--orange)" stroke-width="2"/>
+        <text x="245" y="515" class="wb-box-text-sm">Execution only (already paid):</text>
+        <text x="245" y="538" class="wb-box-text" style="fill: var(--green-ch);">free up to $10k/yr</text>
+
+        <rect x="420" y="490" width="250" height="60" rx="10" ry="10" fill="var(--board-soft)" stroke="var(--yellow)" stroke-width="2"/>
+        <text x="545" y="515" class="wb-box-text-sm">Add AI layer:</text>
+        <text x="545" y="538" class="wb-box-text" style="fill: var(--yellow);">~$5–10/day API</text>
+
+        <rect x="720" y="490" width="200" height="60" rx="10" ry="10" fill="var(--board-soft)" stroke="var(--red-ch)" stroke-width="2"/>
+        <text x="820" y="515" class="wb-box-text-sm">Real capital scale:</text>
+        <text x="820" y="538" class="wb-box-text" style="fill: var(--red-ch);">NOT before day 60</text>
+
+        <!-- Notes at bottom -->
+        <text x="500" y="585" class="wb-annotation-italic" text-anchor="middle" style="font-size: 15px;">Rule: AI doesn't pick trades. It synthesizes, logs, audits.</text>
+        <text x="500" y="605" class="wb-annotation-italic" text-anchor="middle" style="font-size: 15px;">You don't have an edge because you asked an LLM what to buy.</text>
+      </svg>
+    </div>
+  </section>
+
+  <!-- ============ WHITEBOARD BLUEPRINT: 5-ENGINE ALLOCATION ============ -->
+  <section class="section fade-in">
+    <div class="section-header">
+      <div>
+        <div class="section-number">§ IV-b · Phase 2</div>
+        <div class="section-title">5-Engine Allocation (your capital)</div>
+      </div>
+      <div class="section-meta">Month 3–6 · back-test before scaling</div>
+    </div>
+    <p class="whiteboard-intro">Once Phase 1 is working (thesis journal + oversight), expand to a multi-engine allocation for your own capital. Not client money. Not managed accounts. Not guarantees. Your capital, coordinated across what you already own.</p>
+
+    <div class="board">
+      <div class="board-title">Multi-Engine Allocation</div>
+      <div class="board-subtitle">5 engines · 1 dashboard · back-tested before live scaling</div>
+
+      <svg viewBox="0 0 1000 720" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="arrowhead5" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+            <polygon points="0 0, 8 4, 0 8" fill="#9ca3a0"/>
+          </marker>
+        </defs>
+
+        <!-- Engine row label -->
+        <text x="500" y="30" class="wb-header">5 ENGINES · target allocation</text>
+        <line x1="80" y1="42" x2="920" y2="42" stroke="var(--chalk-dim)" stroke-width="1" stroke-dasharray="4,4"/>
+
+        <!-- BTC engine -->
+        <rect x="40" y="70" width="170" height="100" rx="10" ry="10" fill="var(--orange-bg)" stroke="var(--orange)" stroke-width="2"/>
+        <text x="125" y="95" class="wb-box-text-sm" style="fill: var(--orange);">BTC</text>
+        <text x="125" y="122" class="wb-box-text" style="font-size: 22px;">20%</text>
+        <text x="125" y="148" class="wb-annotation-italic" text-anchor="middle" style="font-size: 12px;">Arch arbitrage algo</text>
+        <text x="125" y="163" class="wb-annotation-italic" text-anchor="middle" style="font-size: 11px; fill: var(--chalk-dim);">Kraken / Coinbase</text>
+
+        <!-- ETH engine -->
+        <rect x="225" y="70" width="140" height="100" rx="10" ry="10" fill="var(--orange-bg)" stroke="var(--orange)" stroke-width="2"/>
+        <text x="295" y="95" class="wb-box-text-sm" style="fill: var(--orange);">ETH</text>
+        <text x="295" y="122" class="wb-box-text" style="font-size: 22px;">5%</text>
+        <text x="295" y="148" class="wb-annotation-italic" text-anchor="middle" style="font-size: 12px;">Arch crypto algo</text>
+        <text x="295" y="163" class="wb-annotation-italic" text-anchor="middle" style="font-size: 11px; fill: var(--chalk-dim);">secondary</text>
+
+        <!-- Futures engine -->
+        <rect x="380" y="70" width="200" height="100" rx="10" ry="10" fill="var(--yellow-bg)" stroke="var(--yellow)" stroke-width="2"/>
+        <text x="480" y="95" class="wb-box-text-sm" style="fill: var(--yellow);">S&amp;P FUTURES</text>
+        <text x="480" y="122" class="wb-box-text" style="font-size: 22px; fill: var(--yellow);">50%</text>
+        <text x="480" y="148" class="wb-annotation-italic" text-anchor="middle" style="font-size: 12px;">TradeStation · Arch</text>
+        <text x="480" y="163" class="wb-annotation-italic" text-anchor="middle" style="font-size: 11px; fill: var(--chalk-dim);">primary return engine</text>
+
+        <!-- STRC -->
+        <rect x="595" y="70" width="170" height="100" rx="10" ry="10" fill="var(--purple-bg)" stroke="var(--purple)" stroke-width="2"/>
+        <text x="680" y="95" class="wb-box-text-sm" style="fill: var(--purple);">STRC</text>
+        <text x="680" y="122" class="wb-box-text" style="font-size: 22px;">15%</text>
+        <text x="680" y="148" class="wb-annotation-italic" text-anchor="middle" style="font-size: 12px;">preferred stock</text>
+        <text x="680" y="163" class="wb-annotation-italic" text-anchor="middle" style="font-size: 11px; fill: var(--chalk-dim);">variable 11.5%</text>
+
+        <!-- Stables -->
+        <rect x="780" y="70" width="180" height="100" rx="10" ry="10" fill="var(--green-bg)" stroke="var(--green-ch)" stroke-width="2"/>
+        <text x="870" y="95" class="wb-box-text-sm" style="fill: var(--green-ch);">STABLES</text>
+        <text x="870" y="122" class="wb-box-text" style="font-size: 22px;">10%</text>
+        <text x="870" y="148" class="wb-annotation-italic" text-anchor="middle" style="font-size: 12px;">Kraken/CB earn</text>
+        <text x="870" y="163" class="wb-annotation-italic" text-anchor="middle" style="font-size: 11px; fill: var(--chalk-dim);">platform risk ≠ cash</text>
+
+        <!-- Divider before dashboard -->
+        <line x1="80" y1="205" x2="920" y2="205" stroke="var(--chalk-dim)" stroke-width="1.5" stroke-dasharray="8,6"/>
+        <text x="500" y="230" class="wb-header" style="fill: var(--blue);">CONSOLIDATED DASHBOARD (read-only)</text>
+
+        <!-- Dashboard boxes -->
+        <rect x="80" y="255" width="200" height="70" rx="10" ry="10" fill="var(--blue-bg)" stroke="var(--blue)" stroke-width="2"/>
+        <text x="180" y="280" class="wb-box-text-sm">Positions + P&amp;L</text>
+        <text x="180" y="302" class="wb-annotation-italic" text-anchor="middle" style="font-size: 11px;">live from broker APIs</text>
+        <text x="180" y="317" class="wb-annotation-italic" text-anchor="middle" style="font-size: 11px; fill: var(--chalk-dim);">day · month · YTD</text>
+
+        <rect x="300" y="255" width="200" height="70" rx="10" ry="10" fill="var(--blue-bg)" stroke="var(--blue)" stroke-width="2"/>
+        <text x="400" y="280" class="wb-box-text-sm">Allocation vs target</text>
+        <text x="400" y="302" class="wb-annotation-italic" text-anchor="middle" style="font-size: 11px;">rebalance suggestions</text>
+        <text x="400" y="317" class="wb-annotation-italic" text-anchor="middle" style="font-size: 11px; fill: var(--chalk-dim);">manual execute</text>
+
+        <rect x="520" y="255" width="200" height="70" rx="10" ry="10" fill="var(--blue-bg)" stroke="var(--blue)" stroke-width="2"/>
+        <text x="620" y="280" class="wb-box-text-sm">AI morning digest</text>
+        <text x="620" y="302" class="wb-annotation-italic" text-anchor="middle" style="font-size: 11px;">macro · theses · news</text>
+        <text x="620" y="317" class="wb-annotation-italic" text-anchor="middle" style="font-size: 11px; fill: var(--chalk-dim);">6am daily</text>
+
+        <rect x="740" y="255" width="200" height="70" rx="10" ry="10" fill="var(--red-bg)" stroke="var(--red-ch)" stroke-width="2"/>
+        <text x="840" y="280" class="wb-box-text-sm" style="fill: var(--red-ch);">Drawdown monitor</text>
+        <text x="840" y="302" class="wb-annotation-italic" text-anchor="middle" style="font-size: 11px;">triggers at -20% -30%</text>
+        <text x="840" y="317" class="wb-annotation-italic" text-anchor="middle" style="font-size: 11px; fill: var(--chalk-dim);">non-negotiable</text>
+
+        <!-- Divider before bots -->
+        <line x1="80" y1="360" x2="920" y2="360" stroke="var(--chalk-dim)" stroke-width="1.5" stroke-dasharray="8,6"/>
+        <text x="500" y="385" class="wb-header" style="fill: var(--purple);">CUSTOM BOTS (Month 6+)</text>
+
+        <rect x="80" y="410" width="260" height="70" rx="10" ry="10" fill="var(--purple-bg)" stroke="var(--purple)" stroke-width="2"/>
+        <text x="210" y="435" class="wb-box-text-sm">Risk-overlay bot</text>
+        <text x="210" y="458" class="wb-annotation-italic" text-anchor="middle" style="font-size: 11px;">alerts on drift or DD</text>
+        <text x="210" y="473" class="wb-annotation-italic" text-anchor="middle" style="font-size: 11px; fill: var(--chalk-dim);">suggest only — not auto-execute</text>
+
+        <rect x="360" y="410" width="260" height="70" rx="10" ry="10" fill="var(--purple-bg)" stroke="var(--purple)" stroke-width="2"/>
+        <text x="490" y="435" class="wb-box-text-sm">News-aware de-risk</text>
+        <text x="490" y="458" class="wb-annotation-italic" text-anchor="middle" style="font-size: 11px;">pre-FOMC · CPI · events</text>
+        <text x="490" y="473" class="wb-annotation-italic" text-anchor="middle" style="font-size: 11px; fill: var(--chalk-dim);">tighten stops / cut size</text>
+
+        <rect x="640" y="410" width="260" height="70" rx="10" ry="10" fill="var(--purple-bg)" stroke="var(--purple)" stroke-width="2"/>
+        <text x="770" y="435" class="wb-box-text-sm">Portfolio coordinator</text>
+        <text x="770" y="458" class="wb-annotation-italic" text-anchor="middle" style="font-size: 11px;">watches all 5 engines</text>
+        <text x="770" y="473" class="wb-annotation-italic" text-anchor="middle" style="font-size: 11px; fill: var(--chalk-dim);">Python + broker APIs</text>
+
+        <!-- The wall / managed money gate -->
+        <rect x="60" y="510" width="880" height="110" rx="10" ry="10" fill="var(--red-bg)" stroke="var(--red-ch)" stroke-width="3" stroke-dasharray="6,4"/>
+        <text x="500" y="540" class="wb-header" style="fill: var(--red-ch);">⚠ REGULATORY WALL — client money gated behind this</text>
+        <text x="500" y="565" class="wb-box-text-sm">Angle 06 (managed trading service) is PARKED until registered</text>
+        <text x="500" y="587" class="wb-annotation-italic" text-anchor="middle" style="font-size: 13px;">Series 65 / state RIA · CFTC + NFA if futures · E&amp;O insurance · compliance attorney · real entity</text>
+        <text x="500" y="607" class="wb-annotation" text-anchor="middle" style="font-size: 12px; fill: var(--red-ch);">No client money. No guarantees. No "units." No "bonuses." Not before the gate clears.</text>
+
+        <!-- Bottom rule -->
+        <text x="500" y="665" class="wb-annotation-italic" text-anchor="middle" style="font-size: 14px;">Capital scaling: save, earn, wait. Don't borrow.</text>
+        <text x="500" y="690" class="wb-annotation" text-anchor="middle" style="font-size: 12px; fill: var(--chalk-dim);">HELOCs, margin loans, personal loans on top of trading = how traders become bankrupt traders.</text>
+      </svg>
+    </div>
+  </section>
+
+  <!-- ============ WHITEBOARD BLUEPRINT: CONTENT FUNNEL ============ -->
+  <section class="section fade-in">
+    <div class="section-header">
+      <div>
+        <div class="section-number">§ V · The Content Funnel</div>
+        <div class="section-title">Source → Publish → Monetize</div>
+      </div>
+      <div class="section-meta">Activate only after Angle 01 wins</div>
+    </div>
+    <p class="whiteboard-intro">Adapted from Deutscher's Social Media Growth Framework. Your ICP lives on LinkedIn, not Instagram. Your content source is the wins from Angle 01 — anonymized CO stories, submittal finds, tool reviews. Do not start this before you have wins worth posting.</p>
+
+    <div class="board">
+      <div class="board-title">Content Framework (deferred)</div>
+      <div class="board-subtitle">LinkedIn-first · for electrical PM buyers</div>
+
+      <svg viewBox="0 0 1000 560" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="arrowhead3" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+            <polygon points="0 0, 8 4, 0 8" fill="#9ca3a0"/>
+          </marker>
+        </defs>
+
+        <!-- Column headers -->
+        <rect x="20" y="20" width="185" height="50" rx="8" ry="8" fill="var(--blue-bg)" stroke="var(--blue)" stroke-width="2"/>
+        <text x="112" y="52" class="wb-box-text">1. SOURCE</text>
+
+        <rect x="215" y="20" width="185" height="50" rx="8" ry="8" fill="var(--purple-bg)" stroke="var(--purple)" stroke-width="2"/>
+        <text x="307" y="52" class="wb-box-text">2. DEVELOP</text>
+
+        <rect x="410" y="20" width="185" height="50" rx="8" ry="8" fill="var(--orange-bg)" stroke="var(--orange)" stroke-width="2"/>
+        <text x="502" y="52" class="wb-box-text">3. PACKAGE</text>
+
+        <rect x="605" y="20" width="185" height="50" rx="8" ry="8" fill="var(--green-bg)" stroke="var(--green-ch)" stroke-width="2"/>
+        <text x="697" y="52" class="wb-box-text">4. PUBLISH</text>
+
+        <rect x="800" y="20" width="180" height="50" rx="8" ry="8" fill="var(--red-bg)" stroke="var(--red-ch)" stroke-width="2"/>
+        <text x="890" y="52" class="wb-box-text">5. MONETIZE</text>
+
+        <!-- Arrows between headers -->
+        <line x1="205" y1="45" x2="215" y2="45" class="wb-arrow" marker-end="url(#arrowhead3)"/>
+        <line x1="400" y1="45" x2="410" y2="45" class="wb-arrow" marker-end="url(#arrowhead3)"/>
+        <line x1="595" y1="45" x2="605" y2="45" class="wb-arrow" marker-end="url(#arrowhead3)"/>
+        <line x1="790" y1="45" x2="800" y2="45" class="wb-arrow" marker-end="url(#arrowhead3)"/>
+
+        <!-- Column 1 items -->
+        <rect x="20" y="90" width="185" height="44" rx="6" ry="6" fill="var(--blue-bg)" stroke="var(--blue)" stroke-width="1.5"/>
+        <text x="112" y="117" class="wb-box-text-sm">Your own CO wins</text>
+        <rect x="20" y="144" width="185" height="44" rx="6" ry="6" fill="var(--blue-bg)" stroke="var(--blue)" stroke-width="1.5"/>
+        <text x="112" y="171" class="wb-box-text-sm">r/electricians threads</text>
+        <rect x="20" y="198" width="185" height="44" rx="6" ry="6" fill="var(--blue-bg)" stroke="var(--blue)" stroke-width="1.5"/>
+        <text x="112" y="225" class="wb-box-text-sm">NECA / IBEW chatter</text>
+        <rect x="20" y="252" width="185" height="44" rx="6" ry="6" fill="var(--blue-bg)" stroke="var(--blue)" stroke-width="1.5"/>
+        <text x="112" y="279" class="wb-box-text-sm">Submittal fails you saw</text>
+        <rect x="20" y="306" width="185" height="44" rx="6" ry="6" fill="var(--blue-bg)" stroke="var(--blue)" stroke-width="1.5"/>
+        <text x="112" y="333" class="wb-box-text-sm">Tool tests (verdict log)</text>
+
+        <!-- Column 2 items -->
+        <rect x="215" y="90" width="185" height="44" rx="6" ry="6" fill="var(--purple-bg)" stroke="var(--purple)" stroke-width="1.5"/>
+        <text x="307" y="117" class="wb-box-text-sm">Paste story → Claude</text>
+        <rect x="215" y="144" width="185" height="44" rx="6" ry="6" fill="var(--purple-bg)" stroke="var(--purple)" stroke-width="1.5"/>
+        <text x="307" y="171" class="wb-box-text-sm">5 angles for PMs</text>
+        <rect x="215" y="198" width="185" height="44" rx="6" ry="6" fill="var(--purple-bg)" stroke="var(--purple)" stroke-width="1.5"/>
+        <text x="307" y="225" class="wb-box-text-sm">10 hooks, pick 1</text>
+        <rect x="215" y="252" width="185" height="44" rx="6" ry="6" fill="var(--purple-bg)" stroke="var(--purple)" stroke-width="1.5"/>
+        <text x="307" y="279" class="wb-box-text-sm">Write title BEFORE</text>
+        <rect x="215" y="306" width="185" height="44" rx="6" ry="6" fill="var(--purple-bg)" stroke="var(--purple)" stroke-width="1.5"/>
+        <text x="307" y="333" class="wb-box-text-sm">Your voice, not AI voice</text>
+
+        <!-- Column 3 items -->
+        <rect x="410" y="90" width="185" height="44" rx="6" ry="6" fill="var(--orange-bg)" stroke="var(--orange)" stroke-width="1.5"/>
+        <text x="502" y="117" class="wb-box-text-sm">Specific numbers only</text>
+        <rect x="410" y="144" width="185" height="44" rx="6" ry="6" fill="var(--orange-bg)" stroke="var(--orange)" stroke-width="1.5"/>
+        <text x="502" y="171" class="wb-box-text-sm">CO # · $ recovered</text>
+        <rect x="410" y="198" width="185" height="44" rx="6" ry="6" fill="var(--orange-bg)" stroke="var(--orange)" stroke-width="1.5"/>
+        <text x="502" y="225" class="wb-box-text-sm">Hook = first 2 seconds</text>
+        <rect x="410" y="252" width="185" height="44" rx="6" ry="6" fill="var(--orange-bg)" stroke="var(--orange)" stroke-width="1.5"/>
+        <text x="502" y="279" class="wb-box-text-sm">Anonymize GCs / subs</text>
+        <rect x="410" y="306" width="185" height="44" rx="6" ry="6" fill="var(--orange-bg)" stroke="var(--orange)" stroke-width="1.5"/>
+        <text x="502" y="333" class="wb-box-text-sm">One learning per post</text>
+
+        <!-- Column 4 items -->
+        <rect x="605" y="90" width="185" height="44" rx="6" ry="6" fill="var(--green-bg)" stroke="var(--green-ch)" stroke-width="1.5"/>
+        <text x="697" y="117" class="wb-box-text-sm">LinkedIn 3–4×/wk</text>
+        <rect x="605" y="144" width="185" height="44" rx="6" ry="6" fill="var(--green-bg)" stroke="var(--green-ch)" stroke-width="1.5"/>
+        <text x="697" y="171" class="wb-box-text-sm">X for short hot takes</text>
+        <rect x="605" y="198" width="185" height="44" rx="6" ry="6" fill="var(--green-bg)" stroke="var(--green-ch)" stroke-width="1.5"/>
+        <text x="697" y="225" class="wb-box-text-sm">YouTube monthly</text>
+        <rect x="605" y="252" width="185" height="44" rx="6" ry="6" fill="var(--red-bg)" stroke="var(--red-ch)" stroke-width="1.5"/>
+        <text x="697" y="279" class="wb-box-text-sm" style="fill: var(--red-ch);">SKIP Instagram</text>
+        <rect x="605" y="306" width="185" height="44" rx="6" ry="6" fill="var(--green-bg)" stroke="var(--green-ch)" stroke-width="1.5"/>
+        <text x="697" y="333" class="wb-box-text-sm">Reply to every comment</text>
+
+        <!-- Column 5 items -->
+        <rect x="800" y="90" width="180" height="44" rx="6" ry="6" fill="var(--red-bg)" stroke="var(--red-ch)" stroke-width="1.5"/>
+        <text x="890" y="117" class="wb-box-text-sm">Lead-gen → Angle 04</text>
+        <rect x="800" y="144" width="180" height="44" rx="6" ry="6" fill="var(--red-bg)" stroke="var(--red-ch)" stroke-width="1.5"/>
+        <text x="890" y="171" class="wb-box-text-sm">Niche course (later)</text>
+        <rect x="800" y="198" width="180" height="44" rx="6" ry="6" fill="var(--red-bg)" stroke="var(--red-ch)" stroke-width="1.5"/>
+        <text x="890" y="225" class="wb-box-text-sm">Affiliate (real uses)</text>
+        <rect x="800" y="252" width="180" height="44" rx="6" ry="6" fill="var(--red-bg)" stroke="var(--red-ch)" stroke-width="1.5"/>
+        <text x="890" y="279" class="wb-box-text-sm">Brand equity = long</text>
+        <rect x="800" y="306" width="180" height="44" rx="6" ry="6" fill="var(--red-bg)" stroke="var(--red-ch)" stroke-width="1.5"/>
+        <text x="890" y="333" class="wb-box-text-sm">No quick sponsorships</text>
+
+        <!-- Golden rules -->
+        <rect x="40" y="390" width="920" height="54" rx="10" ry="10" fill="var(--board-soft)" stroke="var(--yellow)" stroke-width="2"/>
+        <text x="500" y="424" class="wb-box-text" style="fill: var(--yellow);">GOLDEN RULES: Consistency beats perfection · Talk about what you actually do · Repeat weekly not daily</text>
+
+        <!-- Gate -->
+        <rect x="260" y="465" width="480" height="70" rx="10" ry="10" fill="var(--board-soft)" stroke="var(--red-ch)" stroke-width="2" stroke-dasharray="6,4"/>
+        <text x="500" y="495" class="wb-box-text" style="fill: var(--red-ch);">ACTIVATION GATE</text>
+        <text x="500" y="520" class="wb-annotation-italic" text-anchor="middle" style="font-size: 14px;">≥3 documented Angle 01 wins before posting anything</text>
+      </svg>
+    </div>
+  </section>
+
+  <!-- ============ TOOLS — TESTED ============ -->
+  <section class="section fade-in">
+    <div class="section-header">
+      <div>
+        <div class="section-number">§ VI · Tools I've Used</div>
+        <div class="section-title">Tested in the Field</div>
+      </div>
+      <div class="section-meta">Verdicts from real work</div>
+    </div>
+    <div class="tools-row">
+
+      <div class="tool">
+        <div class="tool-head">
+          <div class="tool-name">Claude</div>
+          <div class="tool-tag">Anthropic</div>
+        </div>
+        <div class="tool-category">Core · Reasoning</div>
+        <div class="tool-note">The main thinking partner. Strong for drafting RFIs, pricing logic, doc review, and structured planning.</div>
+        <div class="tool-verdict verdict-keep">✓ Keep — daily use</div>
+      </div>
+
+      <div class="tool">
+        <div class="tool-head">
+          <div class="tool-name">Claude Code</div>
+          <div class="tool-tag">Anthropic</div>
+        </div>
+        <div class="tool-category">Code · Terminal</div>
+        <div class="tool-note">For the crypto dashboard project and any real coding work. Mobile-to-desktop handoff still rough but workable.</div>
+        <div class="tool-verdict verdict-keep">✓ Keep — coding only</div>
+      </div>
+
+      <div class="tool">
+        <div class="tool-head">
+          <div class="tool-name">Arch Public</div>
+          <div class="tool-tag">Existing</div>
+        </div>
+        <div class="tool-category">Trading · Execution</div>
+        <div class="tool-note">Already paid, already running. Keep for execution discipline. Don't rebuild what works — layer AI oversight on top.</div>
+        <div class="tool-verdict verdict-keep">✓ Keep — execution layer</div>
+      </div>
+
+      <div class="tool">
+        <div class="tool-head">
+          <div class="tool-name">Bluebeam</div>
+          <div class="tool-tag">Existing</div>
+        </div>
+        <div class="tool-category">PM · Takeoff</div>
+        <div class="tool-note">Not AI, but the document layer AI has to plug into. Takeoff PDFs flow from here into estimates and COs.</div>
+        <div class="tool-verdict verdict-keep">✓ Core stack</div>
+      </div>
+
+      <div class="tool">
+        <div class="tool-head">
+          <div class="tool-name">Accubid / Trimble</div>
+          <div class="tool-tag">Existing</div>
+        </div>
+        <div class="tool-category">Estimating</div>
+        <div class="tool-note">Labor-hour and material databases. AI outputs reconcile against Accubid numbers, never replace them.</div>
+        <div class="tool-verdict verdict-keep">✓ Core stack</div>
+      </div>
+
+      <div class="tool">
+        <div class="tool-head">
+          <div class="tool-name">Claude Cowork</div>
+          <div class="tool-tag">Anthropic</div>
+        </div>
+        <div class="tool-category">Files · Automation</div>
+        <div class="tool-note">GitHub + file management on desktop. Fits the invoice-renamer workflow and document organization.</div>
+        <div class="tool-verdict verdict-test">◐ Testing — week 3</div>
+      </div>
+
+      <div class="tool">
+        <div class="tool-head">
+          <div class="tool-name">Replit</div>
+          <div class="tool-tag">Ghostwriter</div>
+        </div>
+        <div class="tool-category">Code · Hosting</div>
+        <div class="tool-note">Used for the crypto-finance-dashboard project. Good for iPhone-first prototyping and quick deploys.</div>
+        <div class="tool-verdict verdict-test">◐ Useful for mobile dev</div>
+      </div>
+
+      <div class="tool">
+        <div class="tool-head">
+          <div class="tool-name">TradingView</div>
+          <div class="tool-tag">Charts</div>
+        </div>
+        <div class="tool-category">Trading · Charts</div>
+        <div class="tool-note">Already connected to Arch Public via webhooks. Pine Script + alerts. Canvas where theses get tested.</div>
+        <div class="tool-verdict verdict-keep">✓ Core stack</div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============ TOOLS — TO EVALUATE ============ -->
+  <section class="section fade-in">
+    <div class="section-header">
+      <div>
+        <div class="section-number">§ VII · On the Bench</div>
+        <div class="section-title">Tools to Evaluate</div>
+      </div>
+      <div class="section-meta">Test when time allows</div>
+    </div>
+    <div class="tools-row">
+
+      <div class="tool">
+        <div class="tool-head">
+          <div class="tool-name">OpenClaw</div>
+          <div class="tool-tag">Agent framework</div>
+        </div>
+        <div class="tool-category">Automation · 24/7 agents</div>
+        <div class="tool-note">Not needed for Angle 03 (internal toolkit is web forms, not agents). Only consider if Angle 04 activates year 2+ with paying clients.</div>
+        <div class="tool-verdict verdict-pending">· Pending — Year 2+ only</div>
+      </div>
+
+      <div class="tool">
+        <div class="tool-head">
+          <div class="tool-name">NotebookLM</div>
+          <div class="tool-tag">Google</div>
+        </div>
+        <div class="tool-category">Docs · Spec analysis</div>
+        <div class="tool-note">Upload spec sheets, contract docs, trade pubs — ask questions across them. High ROI for spec reviews.</div>
+        <div class="tool-verdict verdict-pending">· Test week 2</div>
+      </div>
+
+      <div class="tool">
+        <div class="tool-head">
+          <div class="tool-name">Perplexity</div>
+          <div class="tool-tag">Search</div>
+        </div>
+        <div class="tool-category">Research · Citations</div>
+        <div class="tool-note">Market research, code/spec lookups, crypto news with sources. Good mobile UX for jobsite use.</div>
+        <div class="tool-verdict verdict-pending">· Pending</div>
+      </div>
+
+      <div class="tool">
+        <div class="tool-head">
+          <div class="tool-name">n8n / Zapier</div>
+          <div class="tool-tag">Automation</div>
+        </div>
+        <div class="tool-category">Workflow · Glue</div>
+        <div class="tool-note">Gmail + Drive + sheets pipelines. Invoice-renamer skill extends naturally into full A/P intake.</div>
+        <div class="tool-verdict verdict-pending">· Pending</div>
+      </div>
+
+      <div class="tool">
+        <div class="tool-head">
+          <div class="tool-name">Cursor</div>
+          <div class="tool-tag">AI IDE</div>
+        </div>
+        <div class="tool-category">Code · Desktop</div>
+        <div class="tool-note">AI-native code editor. Claude Code likely covers the same need. Test only if friction shows up.</div>
+        <div class="tool-verdict verdict-pending">· Pending</div>
+      </div>
+
+      <div class="tool">
+        <div class="tool-head">
+          <div class="tool-name">ElevenLabs</div>
+          <div class="tool-tag">Voice</div>
+        </div>
+        <div class="tool-category">Voice · Dictation</div>
+        <div class="tool-note">Field dictation → clean transcripts. Only keep if it handles construction jargon accurately.</div>
+        <div class="tool-verdict verdict-pending">· Pending</div>
+      </div>
+
+      <div class="tool">
+        <div class="tool-head">
+          <div class="tool-name">Gamma</div>
+          <div class="tool-tag">Slides</div>
+        </div>
+        <div class="tool-category">Decks · Client Proposals</div>
+        <div class="tool-note">AI-generated decks. Test for owner-direct bid presentations. Only keep if client-ready with minimal edits.</div>
+        <div class="tool-verdict verdict-pending">· Pending</div>
+      </div>
+
+      <div class="tool">
+        <div class="tool-head">
+          <div class="tool-name">Obsidian</div>
+          <div class="tool-tag">Notes</div>
+        </div>
+        <div class="tool-category">Trade journal · Second brain</div>
+        <div class="tool-note">The thesis-journal for Angle 02. Local vault, git for backup. Free tier covers everything you need.</div>
+        <div class="tool-verdict verdict-pending">· Pending — Month 2</div>
+      </div>
+
+      <div class="tool">
+        <div class="tool-head">
+          <div class="tool-name">Suno / Udio</div>
+          <div class="tool-tag">Audio</div>
+        </div>
+        <div class="tool-category">Media · Content</div>
+        <div class="tool-note">Unrelated to PM or trading. Skip unless Angle 05 (content) ever activates meaningfully.</div>
+        <div class="tool-verdict verdict-skip">✗ Skip</div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============ TRICKS / PLAYS ============ -->
+  <section class="section fade-in">
+    <div class="section-header">
+      <div>
+        <div class="section-number">§ VIII · Tricks &amp; Plays</div>
+        <div class="section-title">Sharp Edges</div>
+      </div>
+      <div class="section-meta">Specific tactics, not vague advice</div>
+    </div>
+    <div class="ideas-list">
+
+      <div class="idea">
+        <div class="idea-num">01</div>
+        <div class="idea-body">
+          <h4>Price change orders using historical labor ratios, not gut feel</h4>
+          <p>Feed Claude the original scope labor hours + the new scope. Let it compute the proportional labor delta before you apply productivity factors. Catches under-pricing on the labor side, which is where most COs lose money.</p>
+        </div>
+        <div class="idea-meta">Angle 01</div>
+      </div>
+
+      <div class="idea">
+        <div class="idea-num">02</div>
+        <div class="idea-body">
+          <h4>Write RFIs that force billable answers</h4>
+          <p>Structure every RFI with three parts: (1) what the drawings show, (2) what the field found, (3) the specific question. Vague RFIs get vague answers. Precise RFIs surface scope changes that become COs.</p>
+        </div>
+        <div class="idea-meta">Angle 01</div>
+      </div>
+
+      <div class="idea">
+        <div class="idea-num">03</div>
+        <div class="idea-body">
+          <h4>Treat submittal reviews as a spec-diff problem</h4>
+          <p>Submittal comes in. Contract spec goes in. Ask AI for the diff — not a summary. What does the submittal NOT cover that the spec requires? That's the comment list that protects scope.</p>
+        </div>
+        <div class="idea-meta">Angle 01</div>
+      </div>
+
+      <div class="idea">
+        <div class="idea-num">04</div>
+        <div class="idea-body">
+          <h4>Two-tier markup in every CO</h4>
+          <p>Keep direct job costs and overhead-applied costs visibly separate in line items. GCs and owners challenge markup differently when it's a clean line vs. rolled into unit prices.</p>
+        </div>
+        <div class="idea-meta">Angle 01</div>
+      </div>
+
+      <div class="idea">
+        <div class="idea-num">05</div>
+        <div class="idea-body">
+          <h4>Always include delay/disruption language in CO proposals</h4>
+          <p>Even when no delay is known yet. Preserves the right to claim later. Standard reservation-of-rights clause in every template.</p>
+        </div>
+        <div class="idea-meta">Angle 01</div>
+      </div>
+
+      <div class="idea">
+        <div class="idea-num">06</div>
+        <div class="idea-body">
+          <h4>Log trading ideas before entering, review before exiting</h4>
+          <p>The 3-axis journal (asset / source / theme) only works if ideas are logged with a thesis before capital is committed. AI's job is synthesis at the weekly review, not signal generation day-of.</p>
+        </div>
+        <div class="idea-meta">Angle 02</div>
+      </div>
+
+      <div class="idea">
+        <div class="idea-num">07</div>
+        <div class="idea-body">
+          <h4>Layer AI on top of Arch Public — don't replace it</h4>
+          <p>Arch Public handles execution discipline you already paid for. AI handles the thinking Arch doesn't do: macro context, regime detection, thesis-vs-reality audits. Use both.</p>
+        </div>
+        <div class="idea-meta">Angle 02</div>
+      </div>
+
+      <div class="idea">
+        <div class="idea-num">08</div>
+        <div class="idea-body">
+          <h4>Paper-trade with real position sizes, not fantasy sizes</h4>
+          <p>If you're paper-trading with $10M when your real capital is $10k, the psychology doesn't transfer. Use the sizes you'd actually use. Otherwise the learning is worthless.</p>
+        </div>
+        <div class="idea-meta">Angle 02</div>
+      </div>
+
+      <div class="idea">
+        <div class="idea-num">09</div>
+        <div class="idea-body">
+          <h4>Sell outcomes to owners, not tech</h4>
+          <p>Owners don't care about MCP or Claude Code. They care about "we priced 20% more COs accurately this quarter" and "our average RFI turnaround dropped from 8 days to 3." Translate every feature into a P&L impact before the conversation.</p>
+        </div>
+        <div class="idea-meta">Angle 03</div>
+      </div>
+
+      <div class="idea">
+        <div class="idea-num">10</div>
+        <div class="idea-body">
+          <h4>Get adoption before you ask for the raise</h4>
+          <p>3+ colleagues actively using the toolkit on real projects &gt; a working demo you used alone. Owners pay more for leverage across the team, not for a side project. No adoption = no ask. Fix adoption first.</p>
+        </div>
+        <div class="idea-meta">Angle 03</div>
+      </div>
+
+      <div class="idea">
+        <div class="idea-num">11</div>
+        <div class="idea-body">
+          <h4>If you productize, sell to people exactly like you</h4>
+          <p>Mid-size industrial electrical subs. Union IBEW shops. Water/wastewater + industrial focus. Not "all contractors." Narrower ICP = faster sale. Your credibility in that niche is the moat.</p>
+        </div>
+        <div class="idea-meta">Angle 04</div>
+      </div>
+
+      <div class="idea">
+        <div class="idea-num">12</div>
+        <div class="idea-body">
+          <h4>Don't build what you could buy for $20/mo</h4>
+          <p>Estimating software exists. Timekeeping software exists. The gap is how AI drafts, prices, and reviews the outputs of those systems. Stay in the gap. Don't rebuild Accubid.</p>
+        </div>
+        <div class="idea-meta">Angle 04</div>
+      </div>
+
+      <div class="idea">
+        <div class="idea-num">13</div>
+        <div class="idea-body">
+          <h4>Domain credibility is the moat</h4>
+          <p>Someone without electrical PM background can't build this product no matter how good at AI they are. That's the defensibility. Don't dilute it by trying to be generic.</p>
+        </div>
+        <div class="idea-meta">Angle 04</div>
+      </div>
+
+      <div class="idea">
+        <div class="idea-num">14</div>
+        <div class="idea-body">
+          <h4>Measure in dollars recovered, not hours saved</h4>
+          <p>"I saved 2 hours" is unfalsifiable and forgettable. "I recovered $3,400 on CO #14" is real and compounds into a case for productizing — and into content for Angle 05.</p>
+        </div>
+        <div class="idea-meta">Meta</div>
+      </div>
+
+      <div class="idea">
+        <div class="idea-num">15</div>
+        <div class="idea-body">
+          <h4>Keep a failure log alongside the wins</h4>
+          <p>Tools that didn't work, prompts that failed, tactics that sounded smart but flopped. Prevents re-evaluating dead ends and produces honest reviews — and much better content later.</p>
+        </div>
+        <div class="idea-meta">Meta</div>
+      </div>
+
+      <div class="idea">
+        <div class="idea-num">16</div>
+        <div class="idea-body">
+          <h4>Revise this document monthly, not continuously</h4>
+          <p>Don't tweak this every day. Set a monthly review. Let real data accumulate between revisions. The discipline is the point.</p>
+        </div>
+        <div class="idea-meta">Meta</div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============ FOOTER ============ -->
+  <div class="footer">
+    <div class="footer-left">
+      Living document · Revise monthly
+    </div>
+    <div class="footer-right" id="updated-line">
+      Last revised — <span id="rev-date"></span>
+    </div>
+  </div>
+
+</div>
+<script>
+  const now = new Date();
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const dateStr = `${months[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()}`;
+  document.getElementById('date-line').textContent = dateStr;
+  document.getElementById('rev-date').textContent = dateStr;
+</script>
+</body>
+</html>
